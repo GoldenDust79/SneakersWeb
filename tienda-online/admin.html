@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SneakersWeb - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos simples para la página de admin */
+        .admin-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        .admin-table th {
+            background-color: var(--grey-color);
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body id="admin-page">
+    <header id="main-header"></header>
+
+    <main>
+        <div class="admin-container">
+            <h1 class="section-title">Panel de Administración</h1>
+            
+            <div id="user-management">
+                <h2>Gestionar Usuarios</h2>
+                <div id="user-list-container">
+                    <!-- La lista de usuarios se insertará aquí -->
+                </div>
+            </div>
+
+            <hr style="margin: 40px 0;">
+
+            <div id="product-management">
+                <h2>Gestionar Productos</h2>
+                <div id="product-list-container">
+                    <!-- La lista de productos se insertará aquí -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="main-footer"></footer>
+
+    <!-- NOTA DE ESTUDIANTE: Es importante cargar data.js primero para que los datos iniciales existan -->
+    <script src="js/data.js"></script>
+    <!-- Cargamos el main.js para el header/footer -->
+    <script src="js/main.js"></script>
+    <!-- Y finalmente, el script específico para la lógica de esta página -->
+    <script src="js/admin.js"></script>
+</body>
+</html>

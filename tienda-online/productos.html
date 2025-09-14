@@ -1,0 +1,61 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- El título cambiará según la página -->
+    <title>SneakersWeb - Home</title> 
+    
+    <!-- Links a la fuente y al CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+</head>
+<body id="productos-page">
+    <header id="main-header"></header>
+
+    <main class="container">
+        <h2 class="section-title">Todos Nuestros Productos</h2>
+
+        <div class="products-layout">
+            <!-- Barra Lateral de Filtros -->
+            <aside class="filters-sidebar">
+                <h3>Filtros</h3>
+                <div class="filter-group">
+                    <h4>Precio</h4>
+                    <div id="price-filter-container">
+                        <button class="filter-btn active" data-filter="all">Todos</button>
+                        <button class="filter-btn" data-filter="low">Menos de $80.000</button>
+                        <button class="filter-btn" data-filter="medium">$80.000 - $120.000</button>
+                        <button class="filter-btn" data-filter="high">Más de $120.000</button>
+                    </div>
+                </div>
+                <!-- Aquí se podrían añadir más filtros como categoría, etc. -->
+            </aside>
+
+            <!-- Contenido Principal de Productos -->
+            <section class="products-content">
+                <!-- Controles de Ordenamiento -->
+                <div class="sorting-controls">
+                    <label for="sort-select">Ordenar por:</label>
+                    <select id="sort-select">
+                        <option value="default">Relevancia</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="name-asc">Nombre: A-Z</option>
+                        <option value="name-desc">Nombre: Z-A</option>
+                    </select>
+                </div>
+
+                <!-- Grilla de productos (se llenará con JS) -->
+                <div class="product-grid" id="all-products-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer id="main-footer"></footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
