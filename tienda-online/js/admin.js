@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <ul>
                     <li><a href="admin-usuarios.html" class="${currentPage === 'admin-usuarios.html' ? 'active' : ''}">Gestión de Usuarios</a></li>
                     <li><a href="admin-productos.html" class="${currentPage === 'admin-productos.html' ? 'active' : ''}">Gestión de Productos</a></li>
+                    <li><a href="admin-ordenes.html" class="${currentPage === 'admin-ordenes.html' ? 'active' : ''}">Órdenes de Usuarios</a></li>
+                    <li><a href="admin-inventario.html" class="${currentPage === 'admin-inventario.html' ? 'active' : ''}">Gestión de Inventario</a></li>
                     <li><a href="index.html">Volver a la Tienda</a></li>
                 </ul>
             </nav>
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         };
 
-        /* Listeners para los botones de guardar y eliminar. */
+        
         productListContainer.addEventListener('click', (e) => {
             const row = e.target.closest('tr');
             if (!row) return;
@@ -143,6 +145,134 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         renderProductTable();
+    }
+
+    if (currentPage === 'admin-ordenes.html') {
+        const orderListContainer = document.getElementById('order-list-container');
+        let orders = JSON.parse(localStorage.getItem('orders')) || initialOrders;
+
+        const renderOrderTable = () => {
+            orderListContainer.innerHTML = `
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Email Usuario</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(order => `
+                            <tr data-order-id="${order.id}">
+                                <td>${order.id}</td>
+                                <td>${order.userEmail}</td>
+                                <td>${order.date}</td>
+                                <td>${order.total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</td>
+                                <td>
+                                    <select class="order-status-select" data-order-id="${order.id}">
+                                        <option value="Pendiente" ${order.status === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                        <option value="Completado" ${order.status === 'Completado' ? 'selected' : ''}>Completado</option>
+                                        <option value="Enviado" ${order.status === 'Enviado' ? 'selected' : ''}>Enviado</option>
+                                        <option value="Cancelado" ${order.status === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="action-btn delete-btn" data-order-id="${order.id}">Eliminar</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        orderListContainer.addEventListener('change', (e) => {
+            if (e.target.classList.contains('order-status-select')) {
+                const orderId = parseInt(e.target.dataset.orderId);
+                const newStatus = e.target.value;
+                const orderIndex = orders.findIndex(o => o.id === orderId);
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = newStatus;
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    alert('Estado de orden actualizado.');
+                }
+            }
+        });
+
+        orderListContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const orderIdToDelete = parseInt(e.target.dataset.orderId);
+                if (confirm(`¿Estás seguro de que quieres eliminar la orden ${orderIdToDelete}?`)) {
+                    orders = orders.filter(order => order.id !== orderIdToDelete);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    renderOrderTable();
+                    alert('Orden eliminada con éxito.');
+                }
+            }
+        });
+
+        renderOrderTable();
+    }
+
+    if (currentPage === 'admin-inventario.html') {
+        const inventoryListContainer = document.getElementById('inventory-list-container');
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+
+        const renderInventoryTable = () => {
+            inventoryListContainer.innerHTML = `
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Stock Actual</th>
+                            <th>Nuevo Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(product => `
+                            <tr data-product-id="${product.id}">
+                                <td>${product.id}</td>
+                                <td>${product.name}</td>
+                                <td>${product.stock}</td>
+                                <td><input type="number" class="stock-input" placeholder="${product.stock}"></td>
+                                <td>
+                                    <button class="action-btn save-btn">Actualizar Stock</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        inventoryListContainer.addEventListener('click', (e) => {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            const productId = parseInt(row.dataset.productId);
+
+            if (e.target.classList.contains('save-btn')) {
+                const stockInput = row.querySelector('.stock-input');
+                const newStock = parseInt(stockInput.value);
+                if (!isNaN(newStock) && newStock >= 0) {
+                    const productIndex = products.findIndex(p => p.id === productId);
+                    if (productIndex !== -1) {
+                        products[productIndex].stock = newStock;
+                        localStorage.setItem('products', JSON.stringify(products));
+                        renderInventoryTable();
+                        alert('Stock actualizado con éxito.');
+                    }
+                } else {
+                    alert('Por favor, ingrese un valor de stock válido.');
+                }
+            }
+        });
+
+        renderInventoryTable();
     }
 
     renderAdminLayout();

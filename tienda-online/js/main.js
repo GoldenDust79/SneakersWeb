@@ -1,17 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* 
-     * Forzamos la carga de productos y usuarios desde data.js en cada visita.
-     * Esto asegura que cualquier cambio en data.js se refleje inmediatamente,
-     * evitando problemas de caché con localStorage.
-    */
-    localStorage.setItem('products', JSON.stringify(initialProducts));
-    localStorage.setItem('users', JSON.stringify(initialUsers));
+    
+    if (!localStorage.getItem('products')) {
+        localStorage.setItem('products', JSON.stringify(initialProducts));
+    }
+    if (!localStorage.getItem('users')) {
+        localStorage.setItem('users', JSON.stringify(initialUsers));
+    }
+    if (!localStorage.getItem('orders')) {
+        localStorage.setItem('orders', JSON.stringify(initialOrders));
+    }
 
     const products = JSON.parse(localStorage.getItem('products'));
     let users = JSON.parse(localStorage.getItem('users'));
 
-    /* Se asegura de que el usuario admin siempre tenga la contraseña correcta. */
     const correctAdmin = initialUsers.find(user => user.email === 'admin@duoc.cl');
     const usersWithoutAdmin = users.filter(user => user.email !== 'admin@duoc.cl');
     if (correctAdmin) {
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let appliedDiscount = null;
 
-    /* Actualiza el contador de items en el ícono del carrito. */
+    
     const updateCartCounter = () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const cartCountElement = document.getElementById('cart-count');
@@ -39,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /* Añade un producto al carrito o incrementa su cantidad si ya existe. */
+    
     const addToCart = (productId) => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const productToAdd = products.find(p => p.id === productId);
@@ -113,6 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    
+
     const pageId = document.body.id;
 
     /* Lógica para la página de inicio. */
@@ -128,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+    
 
     /* Lógica para la página de productos, incluyendo filtros y ordenamiento. */
     if (pageId === 'productos-page') {
@@ -422,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* Lógica para la página de blogs. */
+    
     if (pageId === 'blogs-page') {
         const modal = document.getElementById('blog-modal');
         const modalTextContainer = document.getElementById('modal-text-container');

@@ -354,7 +354,7 @@ nav ul a:hover { color: var(--primary-color); }
     border-radius: 12px;
     padding: 30px;
     position: sticky;
-    top: 100px; /* Ajustar según la altura del header */
+    top: 100px; 
 }
 .cart-summary h3 {
     font-size: 1.5em;
@@ -526,7 +526,7 @@ footer {
 
 /* --- MODAL --- */
 .modal {
-    display: none; /* Oculto por defecto */
+    display: none; 
     position: fixed;
     z-index: 1001;
     left: 0;
@@ -582,4 +582,6 @@ footer {
     color: var(--dark-color);
     text-decoration: none;
     cursor: pointer;
+}
+r;
 }

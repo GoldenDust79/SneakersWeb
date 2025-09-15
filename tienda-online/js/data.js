@@ -23,5 +23,14 @@ const initialProducts = [
 ];
 
 const initialUsers = [
-    { run: '111111111', nombre: 'Admin', apellidos: 'User', email: 'admin@duoc.cl', fechaNacimiento: '1990-01-01', password: '1234' }
+    { run: '111111111', nombre: 'Admin', apellidos: 'User', email: 'admin@duoc.cl', fechaNacimiento: '1990-01-01', password: '1234' },
+    { run: '222222222', nombre: 'Cliente', apellidos: 'Uno', email: 'client1@example.com', fechaNacimiento: '1995-05-10', password: 'pass123' },
+    { run: '333333333', nombre: 'Cliente', apellidos: 'Dos', email: 'client2@example.com', fechaNacimiento: '1988-11-22', password: 'pass456' }
+];
+
+const initialOrders = [
+    { id: 1, userId: '111111111', userEmail: 'admin@duoc.cl', date: '2023-01-15', total: 154980, status: 'Completado', products: [{ productId: 3, name: 'Converse Chuck Taylor', quantity: 1, price: 54990 }, { productId: 4, name: 'Vans Old Skool', quantity: 1, price: 64990 }] },
+    { id: 2, userId: '111111111', userEmail: 'admin@duoc.cl', date: '2023-02-20', total: 99990, status: 'Pendiente', products: [{ productId: 1, name: 'Nike Air Force 1', quantity: 1, price: 99990 }] },
+    { id: 3, userId: '222222222', userEmail: 'client1@example.com', date: '2023-03-10', total: 209980, status: 'Enviado', products: [{ productId: 8, name: 'ASICS Gel-Lyte III', quantity: 2, price: 109990 }] },
+    { id: 4, userId: '333333333', userEmail: 'client2@example.com', date: '2023-04-01', total: 120000, status: 'Pendiente', products: [{ productId: 11, name: 'Hoka Clifton 9', quantity: 1, price: 129990 }] }
 ];
