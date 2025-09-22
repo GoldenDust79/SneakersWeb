@@ -582,6 +582,11 @@ footer {
     color: var(--dark-color);
     text-decoration: none;
     cursor: pointer;
+.error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    display: none; /* Oculto por defecto */
+    margin-top: 5px;
 }
-r;
-}
+
+
