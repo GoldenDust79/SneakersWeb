@@ -1,74 +1,82 @@
-document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el DOM.
+document.addEventListener('DOMContentLoaded', () => {
 
-    // Función para validar el correo electrónico
-    const validateEmail = (email) => { // Valida el correo electrónico.
+    // Valida el formato del correo.
+    const validateEmail = (email) => {
         const allowedDomains = /@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/;
         return allowedDomains.test(email);
     };
 
-    if (!localStorage.getItem('products')) { // Carga productos si no existen.
+    // Carga datos iniciales si no existen.
+    if (!localStorage.getItem('products')) {
         localStorage.setItem('products', JSON.stringify(initialProducts));
     }
-    if (!localStorage.getItem('users')) { // Carga usuarios si no existen.
+    if (!localStorage.getItem('users')) {
         localStorage.setItem('users', JSON.stringify(initialUsers));
     }
-    if (!localStorage.getItem('orders')) { // Carga órdenes si no existen.
+    if (!localStorage.getItem('orders')) {
         localStorage.setItem('orders', JSON.stringify(initialOrders));
     }
 
-    const products = JSON.parse(localStorage.getItem('products')); // Obtiene productos del almacenamiento.
-    let users = JSON.parse(localStorage.getItem('users')); // Obtiene usuarios del almacenamiento.
+    // Carga productos y usuarios.
+    const products = JSON.parse(localStorage.getItem('products'));
+    let users = JSON.parse(localStorage.getItem('users'));
 
-    const correctAdmin = initialUsers.find(user => user.email === 'admin@duoc.cl'); // Busca al administrador inicial.
-    const usersWithoutAdmin = users.filter(user => user.email !== 'admin@duoc.cl'); // Filtra usuarios sin administrador.
-    if (correctAdmin) { // Si existe el admin correcto.
-        usersWithoutAdmin.push(correctAdmin); // Agrega el administrador correcto.
+    // Asegura un solo administrador.
+    const correctAdmin = initialUsers.find(user => user.email === 'admin@duoc.cl');
+    const usersWithoutAdmin = users.filter(user => user.email !== 'admin@duoc.cl');
+    if (correctAdmin) {
+        usersWithoutAdmin.push(correctAdmin);
     }
-    localStorage.setItem('users', JSON.stringify(usersWithoutAdmin)); // Actualiza usuarios en almacenamiento.
-    users = JSON.parse(localStorage.getItem('users')); // Recarga los usuarios actualizados.
+    localStorage.setItem('users', JSON.stringify(usersWithoutAdmin));
+    users = JSON.parse(localStorage.getItem('users'));
 
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser')); // Obtiene el usuario actual.
+    // Obtiene usuario actual de la sesión.
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
-    const discountCodes = { // Define códigos de descuento.
+    // Define códigos de descuento.
+    const discountCodes = {
         "SNEAKER5": 0.05,
         "PROMO10": 0.10,
         "WEB15": 0.15
     };
-    let appliedDiscount = null; // Descuento aplicado inicialmente nulo.
+    let appliedDiscount = null;
 
-    const updateCartCounter = () => { // Actualiza el contador del carrito.
-        const cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtiene el carrito o array vacío.
-        const cartCountElement = document.getElementById('cart-count'); // Obtiene el elemento contador.
-        if (cartCountElement) { // Si el contador existe.
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); // Suma la cantidad de items.
-            cartCountElement.innerText = totalItems; // Muestra el total de items.
+    // Actualiza el contador del carrito.
+    const updateCartCounter = () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountElement.innerText = totalItems;
         }
     };
 
-    const addToCart = (productId) => { // Añade un producto al carrito.
-        let cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtiene el carrito o array vacío.
-        const productToAdd = products.find(p => p.id === productId); // Busca el producto a añadir.
-        if (!productToAdd) return; // Si no hay producto, termina.
-        const existingItem = cart.find(item => item.id === productId); // Busca si el item ya existe.
-        if (existingItem) { // Si el item ya existe.
-            existingItem.quantity++; // Aumenta la cantidad.
-        } else { // Si no existe el item.
-            cart.push({ ...productToAdd, quantity: 1 }); // Añade nuevo item al carrito.
+    // Añade un producto al carrito.
+    const addToCart = (productId) => {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const productToAdd = products.find(p => p.id === productId);
+        if (!productToAdd) return;
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ ...productToAdd, quantity: 1 });
         }
-        localStorage.setItem('cart', JSON.stringify(cart)); // Guarda el carrito actualizado.
-        updateCartCounter(); // Actualiza el contador del carrito.
-        alert(`'${productToAdd.name}' ha sido añadido al carrito.`); // Muestra alerta de producto añadido.
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCounter();
+        alert(`'${productToAdd.name}' ha sido añadido al carrito.`);
     };
 
-    const renderProducts = (gridContainer, productsArray) => { // Muestra productos en una grilla.
-        gridContainer.innerHTML = ''; // Limpia el contenedor de la grilla.
-        if (productsArray.length === 0) { // Si no hay productos.
-            gridContainer.innerHTML = '<p>No se encontraron productos que coincidan con los filtros.</p>'; // Muestra mensaje de no encontrados.
-            return; // Termina la función.
+    // Muestra productos en una grilla.
+    const renderProducts = (gridContainer, productsArray) => {
+        gridContainer.innerHTML = '';
+        if (productsArray.length === 0) {
+            gridContainer.innerHTML = '<p>No se encontraron productos que coincidan con los filtros.</p>';
+            return;
         }
-        productsArray.forEach(product => { // Itera sobre cada producto.
-            const formattedPrice = product.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }); // Formatea el precio a CLP.
-            gridContainer.innerHTML += ` // Añade el HTML del producto.
+        productsArray.forEach(product => {
+            const formattedPrice = product.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            gridContainer.innerHTML += `
                 <div class="product-item">
                     <div class="product-image" style="background-image: url('${product.imageUrl}');"></div>
                     <div class="product-info">
@@ -83,129 +91,168 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
         });
     };
 
-    const renderHeader = () => { // Muestra el encabezado de la página.
-        const headerContainer = document.getElementById('main-header'); // Obtiene el contenedor del encabezado.
-        if (!headerContainer) return; // Si no hay contenedor, termina.
-        const adminLinkHtml = (currentUser && currentUser.email === 'admin@duoc.cl') ? `<li><a href="admin-usuarios.html">Admin</a></li>` : ''; // Muestra enlace de admin si es admin.
-        const sessionLinksHtml = currentUser // Muestra enlaces de sesión.
+    // Muestra el encabezado de la página.
+    const renderHeader = () => {
+        const headerContainer = document.getElementById('main-header');
+        if (!headerContainer) return;
+
+        const adminLinkHtml = (currentUser && currentUser.email === 'admin@duoc.cl') ? `<li><a href="admin-usuarios.html">Admin</a></li>` : '';
+        const sessionLinksHtml = currentUser
             ? `<li><a href="#" id="logout-link">Cerrar Sesión</a></li>`
             : `<li><a href="login.html">Iniciar Sesión</a></li><li><a href="registro.html">Registrarse</a></li>`;
-        headerContainer.innerHTML = ` // Añade el HTML del encabezado.
+
+        headerContainer.innerHTML = `
             <nav>
+                <div class="hamburger-menu">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
                 <div class="site-name"><a href="index.html">SneakersWeb</a></div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li><a href="blogs.html">Blogs</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                    ${adminLinkHtml}
+                    ${sessionLinksHtml}
+                </ul>
+                <div class="nav-right">
+                    <a href="carrito.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a>
+                </div>
+            </nav>
+            <div class="mobile-nav">
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="productos.html">Productos</a></li>
                     <li><a href="blogs.html">Blogs</a></li>
                     <li><a href="contacto.html">Contacto</a></li>
                     ${adminLinkHtml}
+                    <hr>
+                    <div class="mobile-session-links">
+                        ${sessionLinksHtml}
+                    </div>
                 </ul>
-                <div class="nav-right">
-                    <ul>${sessionLinksHtml}</ul>
-                    <a href="carrito.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a>
-                </div>
-            </nav>`;
-        const logoutLink = document.getElementById('logout-link'); // Obtiene el enlace de cerrar sesión.
-        if (logoutLink) { // Si existe el enlace.
-            logoutLink.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                e.preventDefault(); // Previene la acción por defecto.
-                sessionStorage.removeItem('currentUser'); // Elimina el usuario actual.
-                alert('Has cerrado la sesión.'); // Muestra alerta de sesión cerrada.
-                window.location.href = 'index.html'; // Redirige a la página de inicio.
+            </div>`;
+
+        // Cierra la sesión del usuario.
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.removeItem('currentUser');
+                alert('Has cerrado la sesión.');
+                window.location.href = 'index.html';
             });
         }
+
+        // Controla el menú de hamburguesa.
+        const hamburger = document.querySelector('.hamburger-menu');
+        const mobileNav = document.querySelector('.mobile-nav');
+        
+        hamburger.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+            hamburger.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+        });
     };
 
-    const pageId = document.body.id; // Obtiene el ID del body.
+    // Obtiene el ID de la página actual.
+    const pageId = document.body.id;
 
-    if (pageId === 'home-page') { // Si es la página de inicio.
-        const featuredGrid = document.getElementById('featured-product-grid'); // Obtiene la grilla de destacados.
-        if (featuredGrid) { // Si la grilla existe.
-            const featuredProducts = products.slice(0, 8); // Obtiene los primeros 8 productos.
-            renderProducts(featuredGrid, featuredProducts); // Muestra los productos destacados.
-            featuredGrid.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                if (e.target.classList.contains('add-to-cart-btn')) { // Si se presiona añadir al carrito.
-                    addToCart(parseInt(e.target.dataset.id)); // Añade el producto al carrito.
+    // Lógica para la página de inicio.
+    if (pageId === 'home-page') {
+        const featuredGrid = document.getElementById('featured-product-grid');
+        if (featuredGrid) {
+            const featuredProducts = products.slice(0, 8);
+            renderProducts(featuredGrid, featuredProducts);
+            featuredGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(parseInt(e.target.dataset.id));
                 }
             });
         }
     }
 
-    if (pageId === 'productos-page') { // Si es la página de productos.
-        const allProductsGrid = document.getElementById('all-products-grid'); // Obtiene la grilla de productos.
-        const filterContainer = document.getElementById('price-filter-container'); // Obtiene el contenedor de filtros.
-        const sortSelect = document.getElementById('sort-select'); // Obtiene el selector de orden.
+    // Lógica para la página de productos.
+    if (pageId === 'productos-page') {
+        const allProductsGrid = document.getElementById('all-products-grid');
+        const filterContainer = document.getElementById('price-filter-container');
+        const sortSelect = document.getElementById('sort-select');
 
-        let currentFilter = 'all'; // Filtro actual es "todos".
-        let currentSort = 'default'; // Orden actual es "por defecto".
+        let currentFilter = 'all';
+        let currentSort = 'default';
 
-        const applyFiltersAndSort = () => { // Aplica filtros y orden.
-            let filteredProducts = [...products]; // Copia los productos.
+        // Aplica filtros y orden a productos.
+        const applyFiltersAndSort = () => {
+            let filteredProducts = [...products];
 
-            if (currentFilter === 'low') { // Si el filtro es "bajo".
-                filteredProducts = filteredProducts.filter(p => p.price < 80000); // Filtra productos de precio bajo.
-            } else if (currentFilter === 'medium') { // Si el filtro es "medio".
-                filteredProducts = filteredProducts.filter(p => p.price >= 80000 && p.price <= 120000); // Filtra productos de precio medio.
-            } else if (currentFilter === 'high') { // Si el filtro es "alto".
-                filteredProducts = filteredProducts.filter(p => p.price > 120000); // Filtra productos de precio alto.
+            if (currentFilter === 'low') {
+                filteredProducts = filteredProducts.filter(p => p.price < 80000);
+            } else if (currentFilter === 'medium') {
+                filteredProducts = filteredProducts.filter(p => p.price >= 80000 && p.price <= 120000);
+            } else if (currentFilter === 'high') {
+                filteredProducts = filteredProducts.filter(p => p.price > 120000);
             }
 
-            switch (currentSort) { // Según el tipo de orden.
-                case 'price-asc': // Orden ascendente por precio.
+            switch (currentSort) {
+                case 'price-asc':
                     filteredProducts.sort((a, b) => a.price - b.price);
                     break;
-                case 'price-desc': // Orden descendente por precio.
+                case 'price-desc':
                     filteredProducts.sort((a, b) => b.price - a.price);
                     break;
-                case 'name-asc': // Orden ascendente por nombre.
+                case 'name-asc':
                     filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
                     break;
-                case 'name-desc': // Orden descendente por nombre.
+                case 'name-desc':
                     filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
                     break;
             }
 
-            renderProducts(allProductsGrid, filteredProducts); // Muestra los productos filtrados.
+            renderProducts(allProductsGrid, filteredProducts);
         };
 
-        if (allProductsGrid && filterContainer && sortSelect) { // Si existen los elementos.
-            filterContainer.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                if (e.target.tagName === 'BUTTON') { // Si se presiona un botón.
-                    filterContainer.querySelector('.active').classList.remove('active'); // Quita la clase activa.
-                    e.target.classList.add('active'); // Añade la clase activa.
-                    currentFilter = e.target.dataset.filter; // Actualiza el filtro actual.
-                    applyFiltersAndSort(); // Aplica filtros y orden.
+        if (allProductsGrid && filterContainer && sortSelect) {
+            // Eventos para filtros y orden.
+            filterContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    filterContainer.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    currentFilter = e.target.dataset.filter;
+                    applyFiltersAndSort();
                 }
             });
 
-            sortSelect.addEventListener('change', (e) => { // Añade evento al cambiar.
-                currentSort = e.target.value; // Actualiza el orden actual.
-                applyFiltersAndSort(); // Aplica filtros y orden.
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                applyFiltersAndSort();
             });
 
-            allProductsGrid.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                if (e.target.classList.contains('add-to-cart-btn')) { // Si se presiona añadir al carrito.
-                    addToCart(parseInt(e.target.dataset.id)); // Añade el producto al carrito.
+            allProductsGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(parseInt(e.target.dataset.id));
                 }
             });
 
-            applyFiltersAndSort(); // Aplica filtros y orden.
+            applyFiltersAndSort();
         }
     }
 
-    if (pageId === 'detalle-producto-page') { // Si es la página de detalle.
-        const productDetailContainer = document.getElementById('product-detail-container'); // Obtiene el contenedor de detalle.
-        const relatedProductsGrid = document.getElementById('related-products-grid'); // Obtiene la grilla de relacionados.
+    // Lógica para la página de detalle.
+    if (pageId === 'detalle-producto-page') {
+        const productDetailContainer = document.getElementById('product-detail-container');
+        const relatedProductsGrid = document.getElementById('related-products-grid');
 
-        const params = new URLSearchParams(window.location.search); // Obtiene los parámetros de la URL.
-        const productId = parseInt(params.get('id')); // Obtiene el ID del producto.
-        const product = products.find(p => p.id === productId); // Busca el producto por ID.
+        const params = new URLSearchParams(window.location.search);
+        const productId = parseInt(params.get('id'));
+        const product = products.find(p => p.id === productId);
 
-        if (product) { // Si el producto existe.
-            const formattedPrice = product.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }); // Formatea el precio a CLP.
-            document.title = `SneakersWeb - ${product.name}`; // Actualiza el título de la página.
+        if (product) {
+            const formattedPrice = product.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            document.title = `SneakersWeb - ${product.name}`;
 
-            productDetailContainer.innerHTML = ` // Añade el HTML del detalle.
+            productDetailContainer.innerHTML = `
                 <div class="product-gallery">
                     <img src="${product.imageUrl}" alt="${product.name}">
                 </div>
@@ -219,42 +266,43 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
                 </div>
             `;
 
-            productDetailContainer.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                if (e.target.classList.contains('add-to-cart-btn')) { // Si se presiona añadir al carrito.
-                    addToCart(parseInt(e.target.dataset.id)); // Añade el producto al carrito.
+            productDetailContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(parseInt(e.target.dataset.id));
                 }
             });
 
-            const relatedProducts = products.filter(p => p.id !== productId).slice(0, 4); // Obtiene 4 productos relacionados.
-            renderProducts(relatedProductsGrid, relatedProducts); // Muestra los productos relacionados.
+            const relatedProducts = products.filter(p => p.id !== productId).slice(0, 4);
+            renderProducts(relatedProductsGrid, relatedProducts);
 
-            relatedProductsGrid.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                if (e.target.classList.contains('add-to-cart-btn')) { // Si se presiona añadir al carrito.
-                    addToCart(parseInt(e.target.dataset.id)); // Añade el producto al carrito.
+            relatedProductsGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(parseInt(e.target.dataset.id));
                 }
             });
 
-        } else { // Si el producto no existe.
-            productDetailContainer.innerHTML = '<p>Producto no encontrado. <a href="productos.html">Volver a la tienda</a>.</p>'; // Muestra mensaje de no encontrado.
+        } else {
+            productDetailContainer.innerHTML = '<p>Producto no encontrado. <a href="productos.html">Volver a la tienda</a>.</p>';
         }
     }
 
-    if (pageId === 'carrito-page') { // Si es la página del carrito.
-        const cartContainer = document.getElementById('cart-container'); // Obtiene el contenedor del carrito.
+    // Lógica para la página del carrito.
+    if (pageId === 'carrito-page') {
+        const cartContainer = document.getElementById('cart-container');
         
-        const renderCart = () => { // Muestra el contenido del carrito.
-            const cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtiene el carrito o array vacío.
-            if (cart.length === 0) { // Si el carrito está vacío.
-                cartContainer.innerHTML = '<p>Tu carrito de compras está vacío. <a href="productos.html">Ver productos</a></p>'; // Muestra mensaje de carrito vacío.
-                cartContainer.classList.remove('cart-layout'); // Quita la clase de layout.
-                return; // Termina la función.
+        const renderCart = () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p>Tu carrito de compras está vacío. <a href="productos.html">Ver productos</a></p>';
+                cartContainer.classList.remove('cart-layout');
+                return;
             }
 
-            let subtotal = 0; // Subtotal inicial es 0.
-            let itemsHTML = cart.map(item => { // Itera sobre cada item.
-                const itemTotal = item.price * item.quantity; // Calcula el total del item.
-                subtotal += itemTotal; // Suma al subtotal.
-                return ` // Retorna el HTML del item.
+            let subtotal = 0;
+            let itemsHTML = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                return `
                     <div class="cart-item">
                         <img src="${item.imageUrl}" alt="${item.name}" class="cart-item-image">
                         <div class="cart-item-details">
@@ -267,14 +315,14 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
                             <button class="remove-from-cart-btn" data-id="${item.id}">Eliminar</button>
                         </div>
                     </div>`;
-            }).join(''); // Une todo el HTML.
+            }).join('');
 
-            const discountAmount = appliedDiscount ? subtotal * appliedDiscount.discount : 0; // Calcula el monto de descuento.
-            const total = subtotal - discountAmount; // Calcula el total.
+            const discountAmount = appliedDiscount ? subtotal * appliedDiscount.discount : 0;
+            const total = subtotal - discountAmount;
 
-            let discountHTML = ''; // HTML de descuento vacío.
-            if (appliedDiscount) { // Si hay descuento aplicado.
-                discountHTML = ` // Añade el HTML del descuento.
+            let discountHTML = '';
+            if (appliedDiscount) {
+                discountHTML = `
                     <div class="summary-line">
                         <span>Descuento (${appliedDiscount.code}):</span>
                         <span>-${discountAmount.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span>
@@ -282,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
                 `;
             }
 
-            cartContainer.innerHTML = ` // Añade el HTML del carrito.
+            cartContainer.innerHTML = `
                 <div class="cart-items-list">${itemsHTML}</div>
                 <div class="cart-summary">
                     <h3>Resumen de Compra</h3>
@@ -303,77 +351,82 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
                 </div>`;
         };
 
-        cartContainer.addEventListener('click', (e) => { // Añade evento al hacer clic.
-            if (e.target.id === 'pay-button') { // Si se presiona pagar.
-                if (!currentUser) { // Si no hay usuario actual.
-                    alert('Debes iniciar sesión para poder pagar.'); // Muestra alerta de iniciar sesión.
-                    window.location.href = 'login.html'; // Redirige a la página de login.
-                } else { // Si hay usuario actual.
-                    alert('Proceso de pago no implementado. ¡Gracias por tu compra!'); // Muestra alerta de pago no implementado.
-                    localStorage.removeItem('cart'); // Elimina el carrito.
-                    appliedDiscount = null; // Reinicia el descuento aplicado.
-                    window.location.href = 'index.html'; // Redirige a la página de inicio.
+        // Eventos del carrito de compras.
+        cartContainer.addEventListener('click', (e) => {
+            if (e.target.id === 'pay-button') {
+                if (!currentUser) {
+                    alert('Debes iniciar sesión para poder pagar.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Proceso de pago no implementado. ¡Gracias por tu compra!');
+                    localStorage.removeItem('cart');
+                    appliedDiscount = null;
+                    window.location.href = 'index.html';
                 }
             }
-            if (e.target.classList.contains('remove-from-cart-btn')) { // Si se presiona eliminar del carrito.
-                const productId = parseInt(e.target.dataset.id); // Obtiene el ID del producto.
-                let cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtiene el carrito o array vacío.
-                const updatedCart = cart.filter(item => item.id !== productId); // Filtra el producto a eliminar.
-                localStorage.setItem('cart', JSON.stringify(updatedCart)); // Guarda el carrito actualizado.
-                renderCart(); // Muestra el carrito actualizado.
-                updateCartCounter(); // Actualiza el contador del carrito.
+            if (e.target.classList.contains('remove-from-cart-btn')) {
+                const productId = parseInt(e.target.dataset.id);
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const updatedCart = cart.filter(item => item.id !== productId);
+                localStorage.setItem('cart', JSON.stringify(updatedCart));
+                renderCart();
+                updateCartCounter();
             }
-            if (e.target.classList.contains('apply-discount-btn')) { // Si se presiona aplicar descuento.
-                const codeInput = document.getElementById('discount-code-input'); // Obtiene el input del código.
-                const code = codeInput.value.trim().toUpperCase(); // Obtiene el código y lo formatea.
-                if (discountCodes[code]) { // Si el código existe.
-                    appliedDiscount = { code: code, discount: discountCodes[code] }; // Aplica el descuento.
-                    alert(`¡Código "${code}" aplicado!`); // Muestra alerta de código aplicado.
-                    renderCart(); // Muestra el carrito actualizado.
-                } else { // Si el código no existe.
-                    alert('El código de descuento no es válido.'); // Muestra alerta de código no válido.
+            if (e.target.classList.contains('apply-discount-btn')) {
+                const codeInput = document.getElementById('discount-code-input');
+                const code = codeInput.value.trim().toUpperCase();
+                if (discountCodes[code]) {
+                    appliedDiscount = { code: code, discount: discountCodes[code] };
+                    alert(`¡Código "${code}" aplicado!`);
+                    renderCart();
+                } else {
+                    alert('El código de descuento no es válido.');
                 }
             }
         });
 
-        renderCart(); // Muestra el carrito.
+        renderCart();
     }
 
-    if (pageId === 'registro-page') { // Si es la página de registro.
-        const registerForm = document.getElementById('register-form'); // Obtiene el formulario de registro.
-        const regionSelect = document.getElementById('region'); // Obtiene el selector de región.
-        const comunaSelect = document.getElementById('comuna'); // Obtiene el selector de comuna.
+    // Lógica para la página de registro.
+    if (pageId === 'registro-page') {
+        const registerForm = document.getElementById('register-form');
+        const regionSelect = document.getElementById('region');
+        const comunaSelect = document.getElementById('comuna');
 
-        locations.regiones.forEach(region => { // Itera sobre cada región.
-            const option = document.createElement('option'); // Crea un elemento de opción.
-            option.value = region.region; // Asigna el valor de la región.
-            option.textContent = region.region; // Asigna el texto de la región.
-            regionSelect.appendChild(option); // Añade la opción al selector.
+        // Carga regiones en el selector.
+        locations.regiones.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region.region;
+            option.textContent = region.region;
+            regionSelect.appendChild(option);
         });
 
-        regionSelect.addEventListener('change', () => { // Añade evento al cambiar.
-            const selectedRegion = locations.regiones.find(r => r.region === regionSelect.value); // Busca la región seleccionada.
-            comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>'; // Limpia el selector de comuna.
-            if (selectedRegion) { // Si hay región seleccionada.
-                const sortedComunas = selectedRegion.comunas.sort((a, b) => a.localeCompare(b, 'es-CL')); // Ordena las comunas.
-                sortedComunas.forEach(comuna => { // Itera sobre cada comuna.
-                    const option = document.createElement('option'); // Crea un elemento de opción.
-                    option.value = comuna; // Asigna el valor de la comuna.
-                    option.textContent = comuna; // Asigna el texto de la comuna.
-                    comunaSelect.appendChild(option); // Añade la opción al selector.
+        // Carga comunas según la región.
+        regionSelect.addEventListener('change', () => {
+            const selectedRegion = locations.regiones.find(r => r.region === regionSelect.value);
+            comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+            if (selectedRegion) {
+                const sortedComunas = selectedRegion.comunas.sort((a, b) => a.localeCompare(b, 'es-CL'));
+                sortedComunas.forEach(comuna => {
+                    const option = document.createElement('option');
+                    option.value = comuna;
+                    option.textContent = comuna;
+                    comunaSelect.appendChild(option);
                 });
             }
         });
 
-        registerForm.addEventListener('submit', (e) => { // Añade evento al enviar.
-            e.preventDefault(); // Previene la acción por defecto.
-            const email = e.target.email.value.toLowerCase(); // Obtiene el email y lo formatea.
-            if (!validateEmail(email)) { // Si el email no es válido.
-                alert('El correo no es válido. Solo se permiten correos @duoc.cl, @profesor.duoc.cl y @gmail.com.'); // Muestra alerta de email no válido.
-                return; // Termina la función.
+        // Envía el formulario de registro.
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.email.value.toLowerCase();
+            if (!validateEmail(email)) {
+                alert('El correo no es válido. Solo se permiten correos @duoc.cl, @profesor.duoc.cl y @gmail.com.');
+                return;
             }
 
-            const newUser = { // Crea un nuevo usuario.
+            const newUser = {
                 run: e.target.run.value,
                 nombre: e.target.nombre.value,
                 apellidos: e.target.apellidos.value,
@@ -383,97 +436,101 @@ document.addEventListener('DOMContentLoaded', () => { // Espera a que cargue el 
                 region: e.target.region.value,
                 comuna: e.target.comuna.value
             };
-            const emailExists = users.some(user => user.email === newUser.email); // Verifica si el email ya existe.
-            if (emailExists) { // Si el email ya existe.
-                alert('El correo electrónico ya está registrado.'); // Muestra alerta de email ya registrado.
-                return; // Termina la función.
+            const emailExists = users.some(user => user.email === newUser.email);
+            if (emailExists) {
+                alert('El correo electrónico ya está registrado.');
+                return;
             }
-            users.push(newUser); // Añade el nuevo usuario.
-            localStorage.setItem('users', JSON.stringify(users)); // Guarda los usuarios actualizados.
-            alert('¡Registro exitoso! Serás redirigido para iniciar sesión.'); // Muestra alerta de registro exitoso.
-            window.location.href = 'login.html'; // Redirige a la página de login.
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('¡Registro exitoso! Serás redirigido para iniciar sesión.');
+            window.location.href = 'login.html';
         });
     }
 
-    if (pageId === 'login-page') { // Si es la página de login.
-        const loginForm = document.getElementById('login-form'); // Obtiene el formulario de login.
-        loginForm.addEventListener('submit', (e) => { // Añade evento al enviar.
-            e.preventDefault(); // Previene la acción por defecto.
-            const email = e.target.email.value.toLowerCase(); // Obtiene el email y lo formatea.
-            const password = e.target.password.value; // Obtiene la contraseña.
+    // Lógica para la página de login.
+    if (pageId === 'login-page') {
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.email.value.toLowerCase();
+            const password = e.target.password.value;
 
-            if (!validateEmail(email)) { // Si el email no es válido.
-                alert('El correo no es válido. Solo se permiten correos @duoc.cl, @profesor.duoc.cl y @gmail.com.'); // Muestra alerta de email no válido.
-                return; // Termina la función.
+            if (!validateEmail(email)) {
+                alert('El correo no es válido. Solo se permiten correos @duoc.cl, @profesor.duoc.cl y @gmail.com.');
+                return;
             }
 
-            const foundUser = users.find(u => u.email === email && u.password === password); // Busca al usuario.
+            const foundUser = users.find(u => u.email === email && u.password === password);
 
-            if (foundUser) { // Si se encuentra al usuario.
-                alert(`Bienvenido, ${foundUser.nombre}!`); // Muestra alerta de bienvenida.
-                sessionStorage.setItem('currentUser', JSON.stringify(foundUser)); // Guarda el usuario actual.
+            if (foundUser) {
+                alert(`Bienvenido, ${foundUser.nombre}!`);
+                sessionStorage.setItem('currentUser', JSON.stringify(foundUser));
 
-                if (foundUser.email === 'admin@duoc.cl') { // Si es el administrador.
-                    window.location.href = 'admin-usuarios.html'; // Redirige a la página de admin.
-                } else { // Si no es el administrador.
-                    window.location.href = 'index.html'; // Redirige a la página de inicio.
+                if (foundUser.email === 'admin@duoc.cl') {
+                    window.location.href = 'admin-usuarios.html';
+                } else {
+                    window.location.href = 'index.html';
                 }
-            } else { // Si no se encuentra al usuario.
-                alert('Correo o contraseña incorrectos.'); // Muestra alerta de datos incorrectos.
+            } else {
+                alert('Correo o contraseña incorrectos.');
             }
         });
     }
 
-    if (pageId === 'contacto-page') { // Si es la página de contacto.
-        const contactForm = document.getElementById('contact-form'); // Obtiene el formulario de contacto.
-        const emailInput = document.getElementById('contact-email'); // Obtiene el input de email.
-        const emailError = document.getElementById('email-error'); // Obtiene el mensaje de error.
+    // Lógica para la página de contacto.
+    if (pageId === 'contacto-page') {
+        const contactForm = document.getElementById('contact-form');
+        const emailInput = document.getElementById('contact-email');
+        const emailError = document.getElementById('email-error');
 
-        contactForm.addEventListener('submit', (e) => { // Añade evento al enviar.
-            e.preventDefault(); // Previene la acción por defecto.
-            const email = emailInput.value; // Obtiene el valor del email.
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
 
-            if (validateEmail(email)) { // Si el email es válido.
-                emailError.style.display = 'none'; // Oculta el mensaje de error.
-                alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.'); // Muestra alerta de agradecimiento.
-                contactForm.reset(); // Limpia el formulario.
-            } else { // Si el email no es válido.
-                emailError.style.display = 'block'; // Muestra el mensaje de error.
+            if (validateEmail(email)) {
+                emailError.style.display = 'none';
+                alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+                contactForm.reset();
+            } else {
+                emailError.style.display = 'block';
             }
         });
     }
 
-    if (pageId === 'blogs-page') { // Si es la página de blogs.
-        const modal = document.getElementById('blog-modal'); // Obtiene el modal.
-        const modalTextContainer = document.getElementById('modal-text-container'); // Obtiene el contenedor de texto.
-        const closeButton = document.querySelector('.close-button'); // Obtiene el botón de cerrar.
-        const blogButtons = document.querySelectorAll('.blog-button'); // Obtiene todos los botones de blog.
+    // Lógica para la página de blogs.
+    if (pageId === 'blogs-page') {
+        const modal = document.getElementById('blog-modal');
+        const modalTextContainer = document.getElementById('modal-text-container');
+        const closeButton = document.querySelector('.close-button');
+        const blogButtons = document.querySelectorAll('.blog-button');
 
-        blogButtons.forEach(button => { // Itera sobre cada botón.
-            button.addEventListener('click', (e) => { // Añade evento al hacer clic.
-                const blogPost = e.target.closest('.blog-post'); // Obtiene el post de blog más cercano.
-                const hiddenContent = blogPost.querySelector('.modal-hidden-content'); // Obtiene el contenido oculto.
-                if (hiddenContent) { // Si hay contenido oculto.
-                    modalTextContainer.innerHTML = hiddenContent.innerHTML; // Muestra el contenido en el modal.
-                    modal.style.display = 'block'; // Muestra el modal.
+        blogButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const blogPost = e.target.closest('.blog-post');
+                const hiddenContent = blogPost.querySelector('.modal-hidden-content');
+                if (hiddenContent) {
+                    modalTextContainer.innerHTML = hiddenContent.innerHTML;
+                    modal.style.display = 'block';
                 }
             });
         });
 
-        const closeModal = () => { // Cierra el modal.
-            modal.style.display = 'none'; // Oculta el modal.
-            modalTextContainer.innerHTML = ''; // Limpia el contenido del modal.
+        const closeModal = () => {
+            modal.style.display = 'none';
+            modalTextContainer.innerHTML = '';
         };
 
-        closeButton.addEventListener('click', closeModal); // Añade evento al hacer clic.
+        closeButton.addEventListener('click', closeModal);
 
-        window.addEventListener('click', (event) => { // Añade evento al hacer clic.
-            if (event.target == modal) { // Si se hace clic fuera del modal.
-                closeModal(); // Cierra el modal.
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                closeModal();
             }
         });
     }
 
-    renderHeader(); // Muestra el encabezado.
-    updateCartCounter(); // Actualiza el contador del carrito.
+    // Llama a funciones iniciales.
+    renderHeader();
+    updateCartCounter();
 });

@@ -3,19 +3,24 @@
 /* --- IMPORTACIÓN DE FUENTE Y VARIABLES --- */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Define colores y fuentes globales. */
 :root {
-    --primary-color: #0a84ff; /* Un azul vibrante */
-    --dark-color: #1c1c1e; /* Negro suave para textos */
+    /* Cambiar color primario del tema. */
+    --primary-color: #0a84ff; 
+    --dark-color: #1c1c1e; 
     --secondary-dark: #2c2c2e;
     --light-color: #ffffff;
     --grey-color: #f2f2f7;
     --border-color: #e5e5ea;
+    /* Cambiar fuente principal del sitio. */
     --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    /* Modificar sombra de los elementos. */
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* --- ESTILOS GENERALES Y LAYOUT --- */
+/* Reseteo básico de estilos. */
 * {
     margin: 0;
     padding: 0;
@@ -24,6 +29,7 @@
 
 html { scroll-behavior: smooth; }
 
+/* Estilos generales del cuerpo. */
 body {
     font-family: var(--font-main);
     background-color: var(--light-color);
@@ -35,6 +41,7 @@ body {
 
 main { flex-grow: 1; }
 
+/* Contenedor principal del sitio. */
 .container {
     width: 90%;
     max-width: 1200px;
@@ -42,15 +49,18 @@ main { flex-grow: 1; }
 }
 
 /* --- HEADER Y NAVEGACIÓN --- */
+/* Estilos para el encabezado. */
 header {
     background-color: var(--light-color);
     border-bottom: 1px solid var(--border-color);
     padding: 15px 5%;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1002; /* Asegura que el header esté sobre el overlay */
     backdrop-filter: blur(10px);
 }
+
+/* Estilos para la navegación. */
 nav {
     display: flex;
     justify-content: space-between;
@@ -62,18 +72,19 @@ nav {
     text-decoration: none;
     color: var(--dark-color);
 }
-nav ul {
+.nav-links {
     list-style: none;
     display: flex;
     gap: 30px;
+    align-items: center;
 }
-nav ul a {
+.nav-links a {
     text-decoration: none;
     color: var(--secondary-dark);
     font-weight: 500;
     transition: color 0.2s ease;
 }
-nav ul a:hover { color: var(--primary-color); }
+.nav-links a:hover { color: var(--primary-color); }
 .nav-right {
     display: flex;
     align-items: center;
@@ -85,8 +96,95 @@ nav ul a:hover { color: var(--primary-color); }
     font-weight: 500;
 }
 
+/* Estilos para el menú hamburguesa. */
+.hamburger-menu {
+    display: none;
+    cursor: pointer;
+    z-index: 1002; /* Encima del overlay */
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: var(--dark-color);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animación de hamburguesa a X. */
+.hamburger-menu.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.hamburger-menu.active .bar:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-menu.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Estilos para la navegación móvil. */
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; /* Fondo blanco sólido. */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1001;
+}
+
+.mobile-nav.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+
+.mobile-nav ul a {
+    text-decoration: none;
+    color: var(--dark-color);
+    font-size: 1.5em;
+    display: block;
+    padding: 15px 0;
+}
+
+/* Estilos para botones de sesión móvil. */
+.mobile-session-links {
+    margin-top: 20px;
+}
+
+.mobile-session-links a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+.mobile-session-links a:hover {
+    background-color: #0060c0;
+}
+
 /* --- HERO SECTION (PÁGINA DE INICIO) --- */
+/* Estilos para la sección principal. */
 .hero {
+    /* Cambiar imagen de fondo aquí. */
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.pexels.com/photos/1478442/pexels-photo-1478442.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
     background-size: cover;
     background-position: center;
@@ -105,6 +203,8 @@ nav ul a:hover { color: var(--primary-color); }
     max-width: 600px;
     margin: 0 auto 30px auto;
 }
+
+/* Estilo general de los botones. */
 .btn {
     background-color: var(--primary-color);
     color: var(--light-color);
@@ -114,12 +214,15 @@ nav ul a:hover { color: var(--primary-color); }
     font-weight: 600;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
+/* Modificar efecto hover de botones. */
 .btn:hover {
     background-color: #0060c0;
     transform: translateY(-2px);
 }
 
 /* --- TÍTULOS DE SECCIÓN --- */
+/* Estilos para títulos de sección. */
 .section-title {
     text-align: center;
     font-size: 2.5em;
@@ -128,8 +231,10 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- PRODUCTOS --- */
+/* Estilos para la grilla de productos. */
 .product-grid {
     display: grid;
+    /* Cambiar número de columnas aquí. */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
 }
@@ -206,6 +311,7 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- PÁGINA DE PRODUCTOS (LAYOUT Y FILTROS) --- */
+/* Estilos para la página de productos. */
 .products-layout {
     display: flex;
     gap: 40px;
@@ -262,6 +368,7 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- PÁGINA DETALLE DE PRODUCTO --- */
+/* Estilos para el detalle de producto. */
 #product-detail-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -299,6 +406,7 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- PÁGINA CARRITO DE COMPRAS --- */
+/* Estilos para el carrito de compras. */
 .cart-layout {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -403,6 +511,7 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- FORMULARIOS (Login, Registro, Contacto) --- */
+/* Estilos para los formularios. */
 .form-container {
     max-width: 450px;
     margin: 50px auto;
@@ -428,7 +537,7 @@ nav ul a:hover { color: var(--primary-color); }
 .form-group input, .form-group textarea, .form-group select {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--secondary-dark);
     border-radius: 8px;
     font-family: var(--font-main);
     font-size: 1em;
@@ -452,6 +561,7 @@ nav ul a:hover { color: var(--primary-color); }
 }
 
 /* --- FOOTER --- */
+/* Estilos para el pie de página. */
 footer {
     background-color: var(--dark-color);
     color: var(--grey-color);
@@ -461,6 +571,7 @@ footer {
 }
 
 /* --- BLOGS --- */
+/* Estilos para la página de blogs. */
 .blogs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -525,6 +636,7 @@ footer {
 .modal-hidden-content { display: none; }
 
 /* --- MODAL --- */
+/* Estilos para el modal de blogs. */
 .modal {
     display: none; 
     position: fixed;
@@ -548,6 +660,7 @@ footer {
     border-radius: 12px;
     box-shadow: var(--shadow-hover);
     position: relative;
+    /* Modificar animación del modal. */
     animation: fadeIn 0.3s;
 }
 
@@ -582,6 +695,8 @@ footer {
     color: var(--dark-color);
     text-decoration: none;
     cursor: pointer;
+}
+
 .error-message {
     color: #dc3545;
     font-size: 0.9em;
@@ -589,4 +704,120 @@ footer {
     margin-top: 5px;
 }
 
+/* --- MEDIA QUERIES PARA RESPONSIVE DESIGN --- */
 
+/* Cambiar breakpoint para modo tablet/móvil. */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    /* --- Navegación --- */
+    .nav-links {
+        display: none;
+    }
+    .hamburger-menu {
+        display: block;
+    }
+    .site-name a {
+        font-size: 1.5em;
+    }
+
+    /* --- Hero Section --- */
+    .hero {
+        padding: 80px 20px;
+    }
+    .hero h1 {
+        font-size: 2.5em;
+    }
+    .hero p {
+        font-size: 1em;
+    }
+
+    /* --- Títulos de sección --- */
+    .section-title {
+        font-size: 2em;
+    }
+
+    /* --- Layout de Productos con Filtros --- */
+    .products-layout {
+        flex-direction: column;
+    }
+    .filters-sidebar {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    /* --- Detalle de Producto --- */
+    #product-detail-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .product-details h1 {
+        font-size: 2.2em;
+    }
+
+    /* --- Carrito de Compras --- */
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+    .cart-summary {
+        position: static; /* El resumen ya no es pegajoso */
+    }
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .cart-item-actions {
+        width: 100%;
+        text-align: left;
+    }
+
+    /* --- Formularios --- */
+    .form-container {
+        width: 90%;
+        padding: 30px;
+    }
+}
+
+/* Cambiar breakpoint para móviles pequeños. */
+@media (max-width: 480px) {
+    /* --- Header --- */
+    header {
+        padding: 15px 3%;
+    }
+
+    /* --- Hero Section --- */
+    .hero h1 {
+        font-size: 2em;
+    }
+
+    /* --- Grid de Productos --- */
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    .product-info {
+        padding: 15px;
+    }
+    .product-buttons {
+        grid-template-columns: 1fr; /* Botones uno sobre otro */
+    }
+
+    /* --- Detalle de Producto --- */
+    .detail-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .detail-actions .add-to-cart-btn {
+        width: 100%;
+    }
+
+    /* --- Modal --- */
+    .modal-content {
+        width: 90%;
+        margin: 20% auto;
+        padding: 20px;
+    }
+}
